@@ -3,10 +3,12 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from models import db, User, Project, Task, Notification
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
@@ -20,8 +22,8 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# ================= CREATE ADMIN =================
-def create_admin():
+# ================= AUTO DB INIT (🔥 FIX) =================
+with app.app_context():
     db.create_all()
 
     if not User.query.filter_by(email="admin@gmail.com").first():
@@ -143,7 +145,6 @@ def dashboard():
         is_read=False
     ).all()
 
-    # 🔥 IMPORTANT ADD
     users = User.query.filter_by(role="member").all()
     projects = Project.query.all()
 
@@ -160,7 +161,7 @@ def dashboard():
     )
 
 
-# ================= PROJECTS (ADMIN ONLY) =================
+# ================= PROJECTS =================
 @app.route('/projects')
 @login_required
 def projects():
@@ -170,7 +171,7 @@ def projects():
     return render_template('projects.html', projects=Project.query.all())
 
 
-# ================= TEAM (ADMIN ONLY) =================
+# ================= TEAM =================
 @app.route('/team')
 @login_required
 def team():
@@ -219,7 +220,6 @@ def create_task():
 
     db.session.add(task)
 
-    # 🔔 Notification
     notif = Notification(
         user_id=int(request.form['user_id']),
         message=f"New Task Assigned: {task.title}"
@@ -262,11 +262,6 @@ def mark_read(id):
 
 
 # ================= RUN =================
-import os
-
 if __name__ == "__main__":
-    with app.app_context():
-        create_admin()
-
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
