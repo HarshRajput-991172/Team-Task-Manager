@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth-wrapper">
+
+  <div class="auth-card">
+
+    <!-- TITLE -->
+    <div class="text-center mb-3">
+                        <h3 class="text-white">Task Manager</h3>
+
+      <h3 class="fw-bold">Create Account</h3>
+      <p class="text-white small">Join as a team member</p>
+    </div>
+
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger text-center">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- FORM -->
+    <form method="POST">
+
+      <input name="employee_id" class="form-control input-dark mb-2" placeholder="Employee ID" required>
+
+      <input name="name" class="form-control input-dark mb-2" placeholder="Full Name" required>
+
+      <input type="email" name="email" class="form-control input-dark mb-2" placeholder="Email Address" required>
+
+      <input type="password" name="password" class="form-control input-dark mb-3" placeholder="Password" required>
+
+      <button class="btn btn-glow w-100">Signup</button>
+
+    </form>
+
+    <!-- FOOTER -->
+    <div class="auth-footer">
+      Already have an account?
+      <a href="/login">Login</a>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
