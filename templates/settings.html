@@ -3,17 +3,157 @@
 
 <div class="main">
 
-  <h3>Settings</h3>
-  <p class="text-muted">Manage your account</p>
+  <!-- HEADER -->
+  <div class="mb-3">
+    <h4 class="fw-bold">⚙ Settings</h4>
+    <p class="text-muted small">Manage your account</p>
+  </div>
 
-  <div class="card p-4 mt-3">
+  <!-- FLASH -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-info py-2">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
 
-    <h5>Profile</h5>
-    <p>Name: {{ current_user.name }}</p>
-    <p>Email: {{ current_user.email }}</p>
+  <!-- PROFILE -->
+  <div class="card p-3 shadow-sm border-0 mb-3 compact-card">
+    <h6 class="mb-2">👤 Profile</h6>
+
+    <form method="POST" action="/update_profile">
+      <div class="row">
+
+        <div class="col-md-6 mb-2">
+          <label>Full Name</label>
+          <input type="text" name="name"
+                 value="{{ current_user.name }}"
+                 class="form-control" required>
+        </div>
+
+        <div class="col-md-6 mb-2">
+          <label>Email</label>
+          <input type="email" name="email"
+                 value="{{ current_user.email }}"
+                 class="form-control" required>
+        </div>
+
+      </div>
+
+      <button class="btn btn-primary btn-sm mt-2">
+        Save Profile
+      </button>
+    </form>
+  </div>
+
+  <!-- PASSWORD -->
+  <div class="card p-3 shadow-sm border-0 mb-3 compact-card">
+    <h6 class="mb-2">🔒 Change Password</h6>
+
+    <form method="POST" action="/change_password">
+
+      <div class="mb-2">
+        <label>Current Password</label>
+        <input type="password" name="current_password"
+               class="form-control" required>
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-6 mb-2">
+          <label>New Password</label>
+          <input type="password" name="new_password"
+                 class="form-control"
+                 placeholder="Capital + number + special"
+                 required>
+        </div>
+
+        <div class="col-md-6 mb-2">
+          <label>Confirm Password</label>
+          <input type="password" name="confirm_password"
+                 class="form-control" required>
+        </div>
+
+      </div>
+
+      <small class="text-muted small">
+        Must contain uppercase, number & special char
+      </small>
+
+      <br>
+
+      <button class="btn btn-primary btn-sm mt-2">
+        Update Password
+      </button>
+
+    </form>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="card p-3 shadow-sm border-0 compact-card">
+    <h6 class="mb-2">📌 Account Info</h6>
+
+    <div class="d-flex align-items-center">
+
+      <!-- AVATAR -->
+      <div class="avatar">
+        {{ current_user.name[0] if current_user.name else "U" }}
+      </div>
+
+      <!-- INFO -->
+      <div class="ms-2">
+        <h6 class="mb-0 small">{{ current_user.name }}</h6>
+        <small class="text-muted">{{ current_user.email }}</small><br>
+
+        {% if current_user.role == "admin" %}
+          <span class="badge bg-danger mt-1">ADMIN</span>
+        {% else %}
+          <span class="badge bg-primary mt-1">MEMBER</span>
+        {% endif %}
+      </div>
+
+    </div>
 
   </div>
 
 </div>
+
+<!-- 🎨 COMPACT STYLE -->
+<style>
+
+.compact-card {
+  border-radius: 10px;
+}
+
+.compact-card .form-control {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.compact-card label {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.compact-card .mb-2 {
+  margin-bottom: 8px !important;
+}
+
+/* Avatar */
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0d6efd, #6610f2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+</style>
 
 {% endblock %}

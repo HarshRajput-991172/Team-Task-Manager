@@ -4,57 +4,119 @@
 <div class="main">
 
   <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>Projects</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="fw-bold mb-0">Projects</h4>
+      <small class="text-muted">Manage your Taskify projects</small>
+    </div>
 
-    <button class="btn btn-primary"
+    {% if current_user.role == "admin" %}
+    <button class="btn btn-primary btn-sm shadow-sm"
             data-bs-toggle="modal"
             data-bs-target="#projectModal">
       + New Project
     </button>
+    {% endif %}
   </div>
 
+  <!-- FLASH MESSAGE -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-success py-2">
+        {{ messages[0] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <!-- TABLE -->
-  <div class="card p-3">
+  <div class="card p-3 shadow-sm border-0">
 
     {% if projects %}
-    <table class="table">
-      <thead>
+    <div class="table-responsive">
+
+    <table class="table table-hover align-middle">
+
+      <thead class="table-light">
         <tr>
-          <th>Name</th>
+          <th>Project</th>
           <th>Status</th>
           <th>Created</th>
+          {% if current_user.role == "admin" %}
+          <th class="text-center">Action</th>
+          {% endif %}
         </tr>
       </thead>
 
       <tbody>
         {% for project in projects %}
         <tr>
-          <td>{{ project.name }}</td>
-          <td>{{ project.status }}</td>
-          <td>
-            {{ project.created_at.strftime('%Y-%m-%d') if project.created_at else 'N/A' }}
+
+          <!-- NAME -->
+          <td class="fw-medium">
+            {{ project.name }}
           </td>
+
+          <!-- STATUS -->
+          <td>
+            {% if project.status == "Completed" %}
+              <span class="badge bg-success">Completed</span>
+            {% elif project.status == "In Progress" %}
+              <span class="badge bg-warning text-dark">In Progress</span>
+            {% else %}
+              <span class="badge bg-secondary">Planning</span>
+            {% endif %}
+          </td>
+
+          <!-- DATE -->
+          <td class="text-muted">
+            {{ project.created_at.strftime('%d %b %Y') if project.created_at else '—' }}
+          </td>
+
+          <!-- ACTION -->
+          {% if current_user.role == "admin" %}
+          <td class="text-center">
+
+            <form method="POST"
+                  action="/delete_project/{{ project.id }}"
+                  onsubmit="return confirm('Delete this project?');"
+                  class="d-inline">
+
+              <button class="btn btn-sm btn-outline-danger">
+                Delete
+              </button>
+
+            </form>
+
+          </td>
+          {% endif %}
+
         </tr>
         {% endfor %}
       </tbody>
+
     </table>
 
+    </div>
+
     {% else %}
-      <p class="text-muted">No projects found</p>
+      <div class="text-center p-5">
+        <h6 class="mb-1">No projects yet</h6>
+        <small class="text-muted">Create your first project to get started</small>
+      </div>
     {% endif %}
 
   </div>
 
 </div>
 
-<!-- 🔥 PROJECT MODAL -->
+<!-- PROJECT MODAL -->
+{% if current_user.role == "admin" %}
 <div class="modal fade" id="projectModal">
   <div class="modal-dialog">
-    <div class="modal-content p-3">
+    <div class="modal-content p-3 border-0 shadow">
 
       <div class="modal-header">
-        <h5>Create Project</h5>
+        <h5 class="mb-0">Create Project</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
@@ -62,9 +124,12 @@
 
         <div class="modal-body">
 
-          <input name="name" class="form-control mb-2" placeholder="Project Name" required>
+          <input name="name"
+                 class="form-control mb-3"
+                 placeholder="Project Name"
+                 required>
 
-          <select name="status" class="form-control mb-2">
+          <select name="status" class="form-control">
             <option>Planning</option>
             <option>In Progress</option>
             <option>Completed</option>
@@ -73,8 +138,12 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button class="btn btn-primary">Create</button>
+          <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button class="btn btn-sm btn-primary">
+            Create
+          </button>
         </div>
 
       </form>
@@ -82,5 +151,6 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% endblock %}

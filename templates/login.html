@@ -1,106 +1,104 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="d-flex justify-content-center align-items-center login-bg">
+<div class="auth-bg d-flex justify-content-center align-items-center">
 
-    <div class="col-md-4">
+  <div class="auth-card">
 
-        <div class="card login-card p-3 border-0">
+    <!-- TITLE -->
+    <h3 class="text-center text-white mb-1">Taskify</h3>
+    <p class="text-center subtitle mb-3">Login to continue</p>
 
-            <!-- TITLE -->
-            <div class="text-center mb-2">
-                <div class="icon">📋</div>
-                <h3 class="text-white">Task Manager</h3>
-                <h3 class="  text-white">Login</h3>
-                <h4 class="text-white small">Welcome back!</h4>
-                <p class="text-white small">Access your dashboard</p>
-            </div>
-
-            <!-- FLASH -->
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                <div class="alert alert-danger text-center">
-                  {{ messages[0] }}
-                </div>
-              {% endif %}
-            {% endwith %}
-
-            <!-- FORM -->
-            <form method="POST">
-
-                <div class="mb-2">
-                    <input type="email" name="email" class="form-control input-dark" placeholder="Email" required>
-                </div>
-
-                <div class="mb-2">
-                    <input type="password" name="password" class="form-control input-dark" placeholder="Password" required>
-                </div>
-
-                <button class="btn btn-primary w-100 btn-glow">Login</button>
-
-            </form>
-
-            <!-- ADMIN INFO -->
-            <div class="admin-box text-center mt-2">
-                <small><b>Admin Login:</b> admin@gmail.com | admin123</small>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="text-center mt-2 text-light">
-                <small>
-                    Don't have an account?
-                    <a href="/signup" class="fw-semibold text-primary">Signup</a>
-                </small>
-            </div>
-
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger text-center py-1">
+          {{ messages[0] }}
         </div>
+      {% endif %}
+    {% endwith %}
 
+    <!-- FORM -->
+    <form method="POST">
+
+      <input type="email" name="email"
+             class="form-control input-dark mb-2"
+             placeholder="Enter Email" required>
+
+      <input type="password" name="password"
+             class="form-control input-dark mb-2"
+             placeholder="Enter Password" required>
+
+      <button class="btn btn-primary w-100 mt-3 btn-glow">
+        Login
+      </button>
+
+    </form>
+
+    <!-- ADMIN -->
+    <div class="admin-box text-center mt-2">
+      <small>Admin: admin@gmail.com | admin123</small>
     </div>
+
+    <!-- FOOTER -->
+    <p class="text-center mt-3 small text-light">
+      Don't have an account?
+      <a href="/signup" class="text-primary">Signup</a>
+    </p>
+
+  </div>
 
 </div>
 
 <style>
 
 /* BACKGROUND */
-.login-bg {
+.auth-bg {
   height: 100vh;
-  background: #000;
+  background: linear-gradient(135deg,#0b0b0b,#0d1b3d);
 }
 
 /* CARD */
-.login-card {
-  background: #0b0b0b;
+.auth-card {
+  width: 340px;
+  padding: 25px;
+  background: #070f1f;
   border-radius: 12px;
-  box-shadow: 0 0 25px rgba(13, 110, 253, 0.4);
+  box-shadow: 0 0 25px rgba(13,110,253,0.4);
 }
 
-/* ICON */
-.icon {
-  font-size: 35px;
-  color: #0d6efd;
+/* SUBTITLE (FIXED WHITE) */
+.subtitle {
+  color: white;
+  font-size: 14px;
 }
 
 /* INPUT */
 .input-dark {
-  background: #111;
-  border: 1px solid #333;
+  background: #0d162a;
+  border: 1px solid #2a3a5f;
   color: white;
+  font-size: 14px;
+  padding: 8px;
 }
 
+/* PLACEHOLDER */
 .input-dark::placeholder {
-  color: #aaa;
+  color: #ccc;
+  opacity: 1;
 }
 
+/* INPUT FOCUS */
 .input-dark:focus {
-  background: #111;
-  border-color: #0d6efd;
+  background: #0d162a;
+  border-color: #4f46e5;
   color: white;
   box-shadow: none;
 }
 
 /* BUTTON */
 .btn-glow {
-  background: linear-gradient(90deg, #0d6efd, #0056ff);
+  background: linear-gradient(90deg,#4f46e5,#6366f1);
   border: none;
 }
 
@@ -110,11 +108,11 @@
 
 /* ADMIN BOX */
 .admin-box {
-  border: 1px solid #0d6efd;
+  border: 1px solid #4f46e5;
   border-radius: 6px;
-  padding: 8px;
-  color: #0d6efd;
-  font-size: 13px;
+  padding: 6px;
+  font-size: 12px;
+  color: #4f46e5;
 }
 
 </style>

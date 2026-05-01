@@ -1,50 +1,103 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="auth-wrapper">
+<div class="auth-bg d-flex justify-content-center align-items-center">
 
   <div class="auth-card">
 
-    <!-- TITLE -->
-    <div class="text-center mb-3">
-                        <h3 class="text-white">Task Manager</h3>
-
-      <h3 class="fw-bold">Create Account</h3>
-      <p class="text-white small">Join as a team member</p>
-    </div>
-
-    <!-- FLASH -->
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="alert alert-danger text-center">
-          {{ messages[0] }}
-        </div>
-      {% endif %}
-    {% endwith %}
+    <!-- HEADER -->
+    <h3 class="text-center text-white mb-1">Taskify</h3>
+    <p class="text-center text-light small mb-3">Create your account</p>
 
     <!-- FORM -->
     <form method="POST">
 
-      <input name="employee_id" class="form-control input-dark mb-2" placeholder="Employee ID" required>
+      <!-- EMPLOYEE ID -->
+      <input type="text" name="employee_id"
+             placeholder="Employee ID"
+             class="form-control input-dark mb-2"
+             required>
 
-      <input name="name" class="form-control input-dark mb-2" placeholder="Full Name" required>
+      <!-- NAME -->
+      <input type="text" name="name"
+             placeholder="Full Name"
+             class="form-control input-dark mb-2"
+             required>
 
-      <input type="email" name="email" class="form-control input-dark mb-2" placeholder="Email Address" required>
+      <!-- EMAIL -->
+      <input type="email" name="email"
+             placeholder="Email"
+             class="form-control input-dark mb-2"
+             required>
 
-      <input type="password" name="password" class="form-control input-dark mb-3" placeholder="Password" required>
+      <!-- PASSWORD -->
+      <input type="password" name="password"
+             placeholder="Password"
+             class="form-control input-dark mb-1"
+             pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+             title="Password must include uppercase, lowercase, number, special character and 8+ length"
+             required>
 
-      <button class="btn btn-glow w-100">Signup</button>
+      <!-- PASSWORD RULE -->
+      <small class="text-light d-block mb-2" style="font-size: 11px;">
+        Must contain: A-Z, a-z, number, special char (min 8)
+      </small>
+
+      <!-- SUBMIT -->
+      <button class="btn btn-primary w-100 mt-2 btn-glow">
+        Signup
+      </button>
 
     </form>
 
-    <!-- FOOTER -->
-    <div class="auth-footer">
+    <!-- LOGIN LINK -->
+    <p class="text-center mt-3 small text-light">
       Already have an account?
-      <a href="/login">Login</a>
-    </div>
+      <a href="/login" class="text-primary">Login</a>
+    </p>
 
   </div>
 
 </div>
+
+<!-- STYLES -->
+<style>
+
+.auth-bg {
+  height: 100vh;
+  background: linear-gradient(135deg, #0b0b0b, #0d1b3d);
+}
+
+.auth-card {
+  width: 330px;
+  padding: 25px;
+  background: #070f1f;
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(13, 110, 253, 0.4);
+}
+
+.input-dark {
+  background: #0d162a;
+  border: 1px solid #2a3a5f;
+  color: white;
+  font-size: 14px;
+  padding: 8px;
+}
+
+.input-dark::placeholder {
+  color: #aaa;
+}
+
+.input-dark:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 6px rgba(79, 70, 229, 0.5);
+}
+
+.btn-glow {
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  border: none;
+}
+
+</style>
 
 {% endblock %}

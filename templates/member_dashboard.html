@@ -5,57 +5,71 @@
 
   <!-- HEADER -->
   <div class="mb-4">
-    <h3 class="fw-bold">Welcome, {{ current_user.name }}</h3>
-    <p class="text-muted">Here’s your daily task summary</p>
+    <h3 class="fw-bold">👋 Welcome, {{ current_user.name }}</h3>
+    <p class="text-muted">Here’s your Taskify dashboard</p>
   </div>
-
-  
 
   <!-- 📊 STATS -->
   <div class="row g-4">
 
     <div class="col-md-3">
-      <div class="card p-3 text-center shadow-sm">
+      <div class="card p-3 text-center shadow-sm border-0">
         <small class="text-muted">Total Tasks</small>
         <h3 class="fw-bold">{{ total }}</h3>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div class="card p-3 text-center shadow-sm">
+      <div class="card p-3 text-center shadow-sm border-0">
         <small class="text-muted">Completed</small>
-        <h3 class="text-success fw-bold">{{ completed }}</h3>
+        <h3 class="text-success fw-bold"> {{ completed }}</h3>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div class="card p-3 text-center shadow-sm">
+      <div class="card p-3 text-center shadow-sm border-0">
         <small class="text-muted">Pending</small>
-        <h3 class="text-warning fw-bold">{{ pending }}</h3>
+        <h3 class="text-warning fw-bold"> {{ pending }}</h3>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div class="card p-3 text-center shadow-sm">
+      <div class="card p-3 text-center shadow-sm border-0">
         <small class="text-muted">Overdue</small>
-        <h3 class="text-danger fw-bold">{{ overdue }}</h3>
+        <h3 class="text-danger fw-bold"> {{ overdue }}</h3>
       </div>
     </div>
 
   </div>
 
+  <!-- 🔥 CALCULATE PROGRESS -->
+{% set percent = ((completed / total) * 100) if total > 0 else 0 %}
+
+<!-- 📊 PROGRESS -->
+<div class="progress-bar"
+     data-width="{{ percent_int }}"
+     style="width: 0%;">
+</div>
+
+<script>
+  document.querySelectorAll('.progress-bar').forEach(el => {
+    el.style.width = el.dataset.width + '%';
+  });
+</script>
   <!-- 🔥 TEAM + PROJECTS -->
   <div class="row mt-4">
 
     <!-- 👥 TEAM -->
     <div class="col-md-4">
-      <div class="card p-3 shadow-sm">
+      <div class="card p-3 shadow-sm border-0">
         <h5>👥 Team Members</h5>
 
         {% if users %}
-          <ul class="mt-3">
+          <ul class="mt-3 list-group list-group-flush">
             {% for user in users %}
-              <li>{{ user.name }}</li>
+              <li class="list-group-item bg-transparent">
+                👤 {{ user.name }}
+              </li>
             {% endfor %}
           </ul>
         {% else %}
@@ -67,22 +81,36 @@
 
     <!-- 📁 PROJECTS -->
     <div class="col-md-8">
-      <div class="card p-3 shadow-sm">
+      <div class="card p-3 shadow-sm border-0">
         <h5>📁 Projects</h5>
 
         {% if projects %}
-          <table class="table mt-3">
-            <tr>
-              <th>Name</th>
-              <th>Status</th>
-            </tr>
+          <table class="table table-hover mt-3 align-middle">
 
+            <thead class="table-light">
+              <tr>
+                <th>Project</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
             {% for project in projects %}
             <tr>
-              <td>{{ project.name }}</td>
-              <td>{{ project.status }}</td>
+              <td class="fw-medium">📁 {{ project.name }}</td>
+              <td>
+                {% if project.status == "Completed" %}
+                  <span class="badge bg-success">✔ Completed</span>
+                {% elif project.status == "In Progress" %}
+                  <span class="badge bg-warning text-dark">⏳ In Progress</span>
+                {% else %}
+                  <span class="badge bg-secondary">Planning</span>
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
+            </tbody>
+
           </table>
         {% else %}
           <p class="text-muted">No projects available</p>
@@ -94,17 +122,17 @@
   </div>
 
   <!-- 📋 TASK LIST -->
-  <div class="card mt-4 p-3 shadow-sm">
-    <h5 class="mb-3">My Tasks</h5>
+  <div class="card mt-4 p-3 shadow-sm border-0">
+    <h5 class="mb-3">📋 My Tasks</h5>
 
     {% if tasks and tasks|length > 0 %}
-    <table class="table table-hover align-middle text-center">
+    <table class="table table-hover align-middle">
 
-      <thead class="table-light">
+      <thead class="table-light text-center">
         <tr>
           <th class="text-start">Task</th>
           <th>Status</th>
-          <th>Due Date</th>
+          <th>Due</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -113,30 +141,30 @@
       {% for task in tasks %}
       <tr class="{% if task.is_overdue %}table-danger{% endif %}">
 
-        <td class="text-start">{{ task.title }}</td>
+        <td class="text-start fw-medium">{{ task.title }}</td>
 
-        <td>
+        <td class="text-center">
           {% if task.status == "Completed" %}
-            <span class="badge bg-success">Completed</span>
+            <span class="badge bg-success">✔ Done</span>
           {% elif task.is_overdue %}
-            <span class="badge bg-danger">Overdue</span>
+            <span class="badge bg-danger">⚠ Overdue</span>
           {% else %}
-            <span class="badge bg-warning text-dark">Pending</span>
+            <span class="badge bg-warning text-dark">⏳ Pending</span>
           {% endif %}
         </td>
 
-        <td>
+        <td class="text-center">
           {% if task.due_date %}
-            {{ task.due_date.strftime('%d %b %Y') }}
+            {{ task.due_date.strftime('%d %b') }}
           {% else %}
-            N/A
+            —
           {% endif %}
         </td>
 
-        <td>
+        <td class="text-center">
           {% if task.status != "Completed" %}
             <a href="/update_task/{{ task.id }}" class="btn btn-sm btn-success">
-              ✔ Complete
+              ✔ Done
             </a>
           {% else %}
             ✔
@@ -151,13 +179,12 @@
 
     {% else %}
       <div class="text-center p-4">
-        <h6>No tasks assigned</h6>
+        <h6>No tasks yet 🚀</h6>
         <p class="text-muted">Admin will assign tasks soon</p>
       </div>
     {% endif %}
-  </div>
 
-  
+  </div>
 
 </div>
 

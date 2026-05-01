@@ -14,17 +14,34 @@ class User(UserMixin, db.Model):
     employee_id = db.Column(db.String(20), unique=True, nullable=False, index=True)
     name = db.Column(db.String(100), nullable=False)
 
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    password = db.Column(db.String(255), nullable=False)
 
-    role = db.Column(db.String(10), default="member")  # admin / member
+    role = db.Column(db.String(10), default="member", nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    # 🔗 RELATIONSHIPS
-    projects = db.relationship('Project', backref='creator', lazy=True, cascade="all, delete")
-    tasks = db.relationship('Task', backref='user', lazy=True, cascade="all, delete")
-    notifications = db.relationship('Notification', backref='user', lazy=True, cascade="all, delete")
+    # Relationships
+    projects = db.relationship(
+        'Project',
+        backref='creator',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    tasks = db.relationship(
+        'Task',
+        backref='user',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    notifications = db.relationship(
+        'Notification',
+        backref='user',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<User {self.employee_id}>"
@@ -37,14 +54,23 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     name = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(50), default="Planning")  # 🔥 FIXED
+    status = db.Column(db.String(50), default="Planning", nullable=False)
 
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_by = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    # 🔗 RELATIONSHIP
-    tasks = db.relationship('Task', backref='project', lazy=True, cascade="all, delete")
+    tasks = db.relationship(
+        'Task',
+        backref='project',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Project {self.name}>"
@@ -57,16 +83,38 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     title = db.Column(db.String(150), nullable=False)
-    status = db.Column(db.String(20), default="Pending")  # Pending / Completed
-    priority = db.Column(db.String(10), default="Medium")
 
-    assigned_to = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+    status = db.Column(
+        db.String(20),
+        default="Pending",
+        nullable=False
+    )
 
-    due_date = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    priority = db.Column(
+        db.String(10),
+        default="Medium",
+        nullable=False
+    )
 
-    # 🔥 OVERDUE LOGIC (VERY IMPORTANT)
+    assigned_to = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    project_id = db.Column(
+        db.Integer,
+        db.ForeignKey('project.id', ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    due_date = db.Column(db.DateTime, nullable=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    # 🔥 Overdue logic
     @property
     def is_overdue(self):
         return (
@@ -85,12 +133,18 @@ class Notification(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    message = db.Column(db.String(200))
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
 
-    is_read = db.Column(db.Boolean, default=False)
+    message = db.Column(db.String(200), nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False, nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
         return f"<Notification {self.message}>"
